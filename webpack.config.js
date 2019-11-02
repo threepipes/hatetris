@@ -1,4 +1,5 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const path = require('path');
 
 const miniCssExtractPlugin = new MiniCssExtractPlugin({
   filename: 'bundle.css'
@@ -31,8 +32,13 @@ module.exports = {
       }, 'css-loader']
     }]
   },
+  target: 'node',
+  devServer: {
+    contentBase: path.resolve(__dirname, 'dist'),
+    port: 3000,
+  },
   output: {
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   externals: {
     react: 'React',
