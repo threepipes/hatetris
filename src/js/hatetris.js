@@ -16,6 +16,7 @@ import '../html/hatetris.html'
 import './statcounter'
 import Game from './game.jsx'
 import getEnemyAi from './enemy-ais/get-hatetris'
+import getPlayerAi from './player-ais/player-ai'
 import getGameIsOver from './game-over-conditions/get-hatetris'
 import getPlaceFirstPiece from './piece-placement/get-hatetris'
 import rotationSystem from './rotation-systems/hatetris'
@@ -28,11 +29,13 @@ const wellWidth = 10 // min = 4
 const placeFirstPiece = getPlaceFirstPiece(wellWidth)
 const gameIsOver = getGameIsOver(bar)
 const enemyAi = getEnemyAi(rotationSystem, placeFirstPiece, bar, wellDepth, wellWidth)
+const playerAi = getPlayerAi(rotationSystem, placeFirstPiece, bar, wellDepth, wellWidth)
 const replayTimeout = 50 // milliseconds per frame
 
 ReactDOM.render(<Game
   bar={bar}
   enemyAi={enemyAi}
+  playerAi={playerAi}
   gameIsOver={gameIsOver}
   placeFirstPiece={placeFirstPiece}
   replayTimeout={replayTimeout}

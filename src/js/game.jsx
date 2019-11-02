@@ -50,6 +50,8 @@ class Game extends React.Component {
     }
 
     this.startGame = this.startGame.bind(this)
+    this.startAi = this.startAi.bind(this)
+    this.inputAiPlayStep = this.inputAiPlayStep.bind(this)
     this.startReplay = this.startReplay.bind(this)
     this.inputReplayStep = this.inputReplayStep.bind(this)
     this.left = this.left.bind(this)
@@ -78,6 +80,58 @@ class Game extends React.Component {
       wellStates: [this.firstState],
       replay: [],
       replayTimeoutId: undefined
+    })
+  }
+
+  startAi () {
+    const {
+      replayTimeout
+    } = this.props
+
+    const {
+      replayTimeoutId
+    } = this.state
+
+    // there may be a replay in progress, this
+    // must be killed
+    if (replayTimeoutId) {
+      clearTimeout(replayTimeoutId)
+    }
+
+    const wellStateId = 0
+    const nextReplayTimeoutId = setTimeout(this.inputAiPlayStep, replayTimeout)
+
+    // GO
+    this.setState({
+      mode: 'AIPLAYING',
+      wellStateId: wellStateId,
+      wellStates: [this.firstState],
+      replay: [],
+      replayTimeoutId: nextReplayTimeoutId
+    })
+  }
+
+  inputAiPlayStep () {
+    const {
+      replayTimeout
+    } = this.props
+
+    const {
+      mode
+    } = this.state
+
+    let nextReplayTimeoutId
+
+    if (mode === 'AIPLAYING') {
+      this.redo()
+
+      nextReplayTimeoutId = setTimeout(this.inputAiPlayStep, replayTimeout)
+    } else {
+      console.warn('Ignoring input replay step because mode is', mode)
+    }
+
+    this.setState({
+      replayTimeoutId: nextReplayTimeoutId
     })
   }
 
@@ -146,6 +200,7 @@ class Game extends React.Component {
   // Accepts the input of a move and attempts to apply that
   // transform to the live piece in the live well.
   // Returns the new state.
+  // 1ターンの動作
   handleMove (move) {
     const {
       enemyAi,
@@ -269,10 +324,21 @@ class Game extends React.Component {
     const {
       mode,
       replay,
-      wellStateId
+      wellStateId,
+      wellStates
     } = this.state
 
-    if (mode === 'PLAYING' || mode === 'REPLAYING') {
+    const {
+      playerAi
+    } = this.props
+
+    if (mode === 'PLAYING' || mode === 'REPLAYING' || mode === 'AIPLAYING') {
+      if (mode === 'AIPLAYING' && !(wellStateId in replay)) {
+        const wellState = wellStates[wellStateId]
+        playerAi(wellState.well, wellState.piece.id).forEach(move => {
+          replay.push(move)
+        })
+      }
       if (wellStateId in replay) {
         this.handleMove(replay[wellStateId])
       } else {
@@ -341,6 +407,8 @@ class Game extends React.Component {
         <p className='hatetris__paragraph'>
           <a href='http://qntm.org/hatetris'>
             You're playing HATETRIS by qntm
+            <br/>
+            PlayerAI is made by threepipes
           </a>
         </p>
 
@@ -353,6 +421,12 @@ class Game extends React.Component {
         <p className='hatetris__paragraph'>
           <button type='button' onClick={this.startReplay}>
             show a replay
+          </button>
+        </p>
+
+        <p className='hatetris__paragraph'>
+          <button type='button' onClick={this.startAi}>
+            AI play
           </button>
         </p>
 
