@@ -7,6 +7,7 @@
     "babel-node": "babel-node",
     "build": "npm run webpack",
     "standard": "standard",
+    "start": "webpack-dev-server",
     "test": "npm run babel-node -- test.js",
     "webpack": "webpack"
   },
@@ -38,6 +39,12 @@
     "mini-css-extract-plugin": "^0.8.0",
     "standard": "^13.1.0",
     "webpack": "^4.39.1",
-    "webpack-cli": "^3.3.6"
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.9.0"
+  },
+  "dependencies": {
+    "html-webpack-plugin": "^3.2.0",
+    "log4js": "^5.3.0",
+    "commander":"^3.0.2"
   }
 }
